@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10223b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Part-66 · Mathematics Quiz</title>
+<style>
+:root{color-scheme:light;--navy:#10223b;--blue:#2858a5;--bg:#f3f6fb;--ink:#17243a;--muted:#66748a;--line:#dce4ef;--green:#177245;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--navy);color:#fff;padding:22px 18px 25px;border-radius:0 0 24px 24px}
+.wrap{width:min(760px,100%);margin:auto;padding:0 16px}
+.brand{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.8;font-weight:700}
+h1{font-size:25px;line-height:1.15;margin:7px 0 6px}header p{margin:0;color:#d7e2f2;font-size:14px}
+main{padding:18px 0 35px}.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 18px #152b4a0a}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px}
+select,button{font:inherit}select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:white;color:var(--ink)}
+button{border:0;border-radius:12px;padding:13px 15px;font-weight:700;cursor:pointer}
+.primary{background:var(--blue);color:white}.secondary{background:#eaf0f9;color:var(--navy)}.quiet{background:transparent;color:var(--blue);padding:8px}
+.startrow{display:flex;gap:10px;margin-top:14px}.startrow button{flex:1}
+.stats{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px;margin-bottom:12px}
+.progress{height:6px;background:#e8edf5;border-radius:20px;overflow:hidden;margin-bottom:18px}.bar{height:100%;background:var(--blue);width:0;transition:width .2s}
+.qnum{color:var(--blue);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.question{font-size:20px;font-weight:700;line-height:1.4;margin:8px 0 20px;white-space:pre-wrap}
+.answers{display:grid;gap:10px}.answer{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;background:white;border:1px solid var(--line);color:var(--ink);padding:13px;border-radius:13px;font-weight:500;line-height:1.4}
+.letter{flex:0 0 28px;height:28px;border-radius:8px;background:#eef2f8;display:grid;place-items:center;font-weight:800;color:#314663}
+.answer.selected{border-color:var(--blue);background:#f0f5ff}.answer.correct{border-color:#55a77a;background:#effaf3}.answer.wrong{border-color:#e18b86;background:#fff3f2}
+.answer:disabled{cursor:default;opacity:1}.feedback{margin-top:14px;padding:12px;border-radius:12px;font-size:14px}.feedback.good{background:#effaf3;color:#145c36}.feedback.bad{background:#fff3f2;color:#8c2019}
+.actions{display:flex;gap:10px;margin-top:16px}.actions button{flex:1}.hidden{display:none!important}
+.result{text-align:center}.score{font-size:42px;font-weight:850;color:var(--navy);margin:4px}.result p{color:var(--muted)}
+.reviewlist{display:grid;gap:10px;margin-top:15px}.reviewitem{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:left}.reviewitem strong{display:block;margin-bottom:6px}.small{font-size:13px;color:var(--muted)}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:5px 15px 28px}
+@media(max-width:430px){.controls{grid-template-columns:1fr}.question{font-size:19px}.panel{padding:15px}.startrow{flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">EASA Part-66 · Question Bank</div><h1>Mathematics Quiz</h1><p>1048 domande · allenamento casuale e simulazione d'esame</p></div></header>
+<main class="wrap">
+<section id="setup" class="panel">
+ <h2 style="font-size:18px;margin:0 0 14px">Imposta la sessione</h2>
+ <div class="controls">
+  <div class="field"><label for="mode">Modalità</label><select id="mode"><option value="practice">Allenamento · correzione subito</option><option value="exam">Simulazione · correzione alla fine</option></select></div>
+  <div class="field"><label for="count">Numero di domande</label><select id="count"><option value="10">10 domande</option><option value="20" selected>20 domande</option><option value="40">40 domande</option><option value="100">100 domande</option><option value="all">Tutte le 1048</option></select></div>
+ </div>
+ <div class="startrow"><button class="primary" id="start">Inizia quiz casuale</button><button class="secondary" id="wrongOnly">Ripassa gli errori recenti</button></div>
+ <p class="small" id="loadStatus" style="margin:13px 0 0">Caricamento del database…</p>
+</section>
+<section id="quiz" class="panel hidden">
+ <div class="stats"><span id="counter">Domanda 1</span><span id="liveScore">Corrette: 0</span></div>
+ <div class="progress"><div class="bar" id="bar"></div></div>
+ <div class="qnum" id="qid"></div><div class="question" id="qtext"></div>
+ <div class="answers" id="answers"></div><div id="feedback" class="hidden"></div>
+ <div class="actions"><button class="secondary" id="quit">Termina sessione</button><button class="primary" id="next" disabled>Conferma risposta</button></div>
+</section>
+<section id="results" class="panel hidden">
+ <div class="result"><div class="qnum">Sessione completata</div><div class="score" id="score">0%</div><p id="resultText"></p></div>
+ <div class="actions"><button class="primary" id="retryWrong">Rifai le sbagliate</button><button class="secondary" id="again">Nuovo quiz</button></div>
+ <div id="review" class="reviewlist"></div>
+</section>
+</main>
+<footer>Database ricavato dal PDF “Modulo Matematica”. Le risposte corrette sono quelle contrassegnate nel documento originale.</footer>
+<script>
+let bank=[], session=[], index=0, selected=null, mode='practice', results=[], wrongPool=[];
+const $=id=>document.getElementById(id);
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+async function init(){try{const r=await fetch('./questions.json');if(!r.ok)throw new Error('HTTP '+r.status);bank=await r.json();$('loadStatus').textContent=`Database pronto: ${bank.length} domande importate.`;$('start').disabled=false}catch(e){$('loadStatus').textContent='Non riesco a caricare questions.json. Assicurati che index.html e questions.json siano nella stessa cartella e apri l’app dal sito pubblicato.';$('start').disabled=true}}
+function begin(pool=null){if(!bank.length)return;mode=$('mode').value;const source=pool||bank;const n=pool?pool.length:($('count').value==='all'?source.length:Math.min(+ $('count').value,source.length));session=shuffle(source).slice(0,n);index=0;results=[];$('setup').classList.add('hidden');$('results').classList.add('hidden');$('quiz').classList.remove('hidden');render()}
+function render(){selected=null;const q=session[index];$('counter').textContent=`Domanda ${index+1} di ${session.length}`;$('liveScore').textContent=`Corrette: ${results.filter(x=>x.ok).length}`;$('bar').style.width=`${index/session.length*100}%`;$('qid').textContent=`Domanda originale Q${q.id}`;$('qtext').textContent=q.question||'(Testo della domanda non disponibile nel PDF estratto)';$('answers').innerHTML='';$('feedback').className='hidden';$('feedback').textContent='';$('next').disabled=true;$('next').textContent=mode==='exam'?'Prossima domanda':'Conferma risposta';
+q.options.forEach(o=>{const b=document.createElement('button');b.className='answer';b.innerHTML=`<span class="letter">${o.key}</span><span></span>`;b.lastElementChild.textContent=o.text;b.onclick=()=>choose(o.key,b);$('answers').appendChild(b)});$('next').textContent=mode==='practice'?'Conferma risposta':(index===session.length-1?'Termina e correggi':'Prossima domanda')}
+function choose(key,btn){if(selected!==null)return;selected=key;document.querySelectorAll('.answer').forEach(b=>{b.disabled=true;if(b.querySelector('.letter').textContent===key)b.classList.add('selected')});if(mode==='practice')showFeedback();else $('next').disabled=false}
+function showFeedback(){const q=session[index],ok=selected===q.answer;results.push({q,selected,ok});document.querySelectorAll('.answer').forEach(b=>{const k=b.querySelector('.letter').textContent;if(k===q.answer)b.classList.add('correct');if(k===selected&&selected!==q.answer)b.classList.add('wrong')});const f=$('feedback');f.className='feedback '+(ok?'good':'bad');f.textContent=ok?'Corretto!':`Non esatto. Risposta corretta: ${q.answer}. ${q.options.find(o=>o.key===q.answer)?.text||''}`;$('next').disabled=false;$('next').textContent=index===session.length-1?'Vedi risultato':'Domanda successiva'}
+function advance(){if(selected===null)return;if(mode==='practice'&&results.length<=index)showFeedback();if(index<session.length-1){index++;render()}else finish()}
+function finish(){if(mode==='exam'){results=session.map((q,i)=>({q,selected:sessionAnswers[i]||null,ok:sessionAnswers[i]===q.answer}))}wrongPool=results.filter(x=>!x.ok).map(x=>x.q);try{localStorage.setItem('part66_wrong',JSON.stringify(wrongPool))}catch(e){}$('quiz').classList.add('hidden');$('results').classList.remove('hidden');const correct=results.filter(x=>x.ok).length;const pct=results.length?Math.round(correct/results.length*100):0;$('score').textContent=pct+'%';$('resultText').textContent=`Hai risposto correttamente a ${correct} domande su ${results.length}.`;const review=$('review');review.innerHTML='';if(wrongPool.length){const h=document.createElement('div');h.className='small';h.textContent='Domande da ripassare';review.appendChild(h);results.filter(x=>!x.ok).slice(0,50).forEach(x=>{const d=document.createElement('div');d.className='reviewitem';const t=document.createElement('strong');t.textContent=`Q${x.q.id}. ${x.q.question}`;const p=document.createElement('div');p.className='small';p.textContent=`Tua risposta: ${x.selected||'nessuna'} · Corretta: ${x.q.answer} — ${x.q.options.find(o=>o.key===x.q.answer)?.text||''}`;d.append(t,p);review.appendChild(d)})}}
+let sessionAnswers={};
+const originalBegin=begin;
+begin=function(pool=null){sessionAnswers={};originalBegin(pool)};
+const originalChoose=choose;
+choose=function(key,btn){sessionAnswers[index]=key;originalChoose(key,btn)};
+$('start').onclick=()=>begin();$('wrongOnly').onclick=()=>{let w=[];try{w=JSON.parse(localStorage.getItem('part66_wrong')||'[]')}catch(e){}if(!w.length){alert('Non hai ancora errori salvati. Completa prima un quiz.');return}begin(w)};
+$('next').onclick=()=>advance();$('quit').onclick=()=>{if(confirm('Vuoi terminare la sessione?'))finish()};$('again').onclick=()=>{$('results').classList.add('hidden');$('setup').classList.remove('hidden')};$('retryWrong').onclick=()=>{if(!wrongPool.length){alert('Non ci sono risposte sbagliate da ripetere.');return}begin(wrongPool)};
+init();
+</script>
+</body></html>
